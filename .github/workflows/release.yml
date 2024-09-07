@@ -46,8 +46,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VERSION_EXISTS=$(gh release list | grep -c "v${{ env.VERSION }}")
-          if [ "$VERSION_EXISTS" -ne 0 ]; then
+          TAG_EXISTS=$(gh release list --limit 1000 | grep -c "v${{ env.VERSION }}")
+          if [ "$TAG_EXISTS" -ne 0 ]; then
             echo "Version ${{ env.VERSION }} already exists. Abandoning."
             exit 0
           fi
@@ -70,8 +70,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "v${{ env.VERSION }}" ./output/* --title "Release ${{ env.VERSION }}" --notes "Automated release of version ${{ env.VERSION }}"
-      - name: Update version in manifest.json
+          gh release create "v${{ env.VERSION }}" ./output/* --title "Release ${{ env.VERSION }}" --notes "Automated release of version ${{ env.VERSION }}"      - name: Update version in manifest.json
         run: |
           jq --arg version "$VERSION" '.version = $version' manifest.json > manifest.tmp.json
           mv manifest.tmp.json manifest.json
