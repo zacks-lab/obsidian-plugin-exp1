@@ -47,13 +47,30 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION_EXISTS=$(gh release list | grep -c "v${{ env.VERSION }}")
-          echo "VERSION_EXISTS=$VERSION_EXISTS" >> $GITHUB_ENV
-      - name: Abandon if version exists
-        if: env.VERSION_EXISTS != '0'
-        run: |
-          echo "Version ${{ env.VERSION }} already exists. Abandoning."
-          exit 0
+          if [ "$VERSION_EXISTS" -ne 0 ]; then
+            echo "Version ${{ env.VERSION }} already exists. Abandoning."
+            exit 0
+          fi
 
+      - name: Update version in manifest.json
+        run: |
+          jq --arg version "$VERSION" '.version = $version' manifest.json > manifest.tmp.json
+          mv manifest.tmp.json manifest.json
+
+      - name: Build the project
+        run: npm run build
+
+      - name: Gather output
+        run: |
+          mkdir -p output
+          cp -r dist/* output/
+          cp manifest.json output/
+
+      - name: Create GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v${{ env.VERSION }}" ./output/* --title "Release ${{ env.VERSION }}" --notes "Automated release of version ${{ env.VERSION }}"
       - name: Update version in manifest.json
         run: |
           jq --arg version "$VERSION" '.version = $version' manifest.json > manifest.tmp.json
