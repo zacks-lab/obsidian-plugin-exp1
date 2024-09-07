@@ -43,10 +43,11 @@ jobs:
 
       - name: Check if version exists in releases
         id: check_version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION_EXISTS=$(gh release list | grep -c "v${{ env.VERSION }}")
           echo "VERSION_EXISTS=$VERSION_EXISTS" >> $GITHUB_ENV
-
       - name: Abandon if version exists
         if: env.VERSION_EXISTS != '0'
         run: |
