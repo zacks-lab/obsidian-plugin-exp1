@@ -42,8 +42,13 @@ jobs:
           VERSION=$(cat package.json | jq -r '.version')
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
+      - name: Set GitHub Token
+        run: echo "GH_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
+
       - name: Check if version exists in releases
         id: version_check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION_EXISTS=$(gh release list | grep -w "$VERSION" || true)
           if [ -n "$VERSION_EXISTS" ]; then
@@ -71,6 +76,8 @@ jobs:
         run: mkdir -p output && cp -R dist/* output/ && cp manifests.json output/
 
       - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION=$(cat package.json | jq -r '.version')
           gh release create "$VERSION" ./output/* --title "Release $VERSION" --notes "Release $VERSION"
