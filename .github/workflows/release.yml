@@ -73,7 +73,9 @@ jobs:
         run: npm run build
 
       - name: Create Release Directory
-        run: mkdir -p output && cp -R dist/* output/ && cp manifest.json output/
+        run: |
+          mkdir -p output
+          cp manifest.json output/
 
       - name: Create GitHub Release
         env:
