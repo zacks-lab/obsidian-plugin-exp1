@@ -63,17 +63,17 @@ jobs:
           npm version $VERSION --no-git-tag-version
           echo "Updated package.json to version $VERSION"
 
-      - name: Update version in manifests.json
+      - name: Update version in manifest.json
         run: |
           VERSION=$(cat package.json | jq -r '.version')
-          jq --arg v "$VERSION" '.version = $v' manifests.json > manifests_tmp.json
-          mv manifests_tmp.json manifests.json
+          jq --arg v "$VERSION" '.version = $v' manifest.json > manifest_tmp.json
+          mv manifest_tmp.json manifest.json
 
       - name: Build the project
         run: npm run build
 
       - name: Create Release Directory
-        run: mkdir -p output && cp -R dist/* output/ && cp manifests.json output/
+        run: mkdir -p output && cp -R dist/* output/ && cp manifest.json output/
 
       - name: Create GitHub Release
         env:
