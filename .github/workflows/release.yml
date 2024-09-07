@@ -85,4 +85,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION=$(cat package.json | jq -r '.version')
-          gh release create "v$VERSION" ./output/* --title "v$VERSION" --notes "Release $VERSION" --tag "$VERSION"
+          gh release create "$VERSION" ./output/* --title "v$VERSION" --notes "Release $VERSION"
