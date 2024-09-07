@@ -76,6 +76,9 @@ jobs:
         run: |
           mkdir -p output
           cp manifest.json output/
+          if [ -f styles.css ]; then
+            cp styles.css output/
+          fi
 
       - name: Create GitHub Release
         env:
